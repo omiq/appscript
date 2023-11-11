@@ -34,6 +34,31 @@ function main() {
       body.insertListItem(i, paragraphText.substring(2)).setGlyphType(DocumentApp.GlyphType.BULLET);
     }
 
+    var textObj = paragraph.editAsText(); // Get Text object for more detailed editing
+
+    // Other formatting like headings and lists...
+
+    // Bold Formatting
+    var boldPattern = /\*\*(.*?)\*\*/g;
+    applyMarkdownFormatting(textObj, boldPattern, DocumentApp.Attribute.BOLD);
+
+    // Italic Formatting
+    var italicPattern = /(\*|_)(.*?)\1/g;
+    applyMarkdownFormatting(textObj, italicPattern, DocumentApp.Attribute.ITALIC);
+  
+
+  }
+}
+
+function applyMarkdownFormatting(textObj, regexPattern, attribute) {
+  var match;
+  while ((match = regexPattern.exec(textObj.getText())) !== null) {
+    var startIndex = match.index;
+    var endIndex = startIndex + match[0].length;
+    textObj.deleteText(startIndex, endIndex - 1);
+    textObj.insertText(startIndex, match[1]);
+    textObj.setAttributes(startIndex, startIndex + match[1].length - 1, { [attribute]: true });
+    regexPattern.lastIndex = startIndex + match[1].length; // Reset regex index to reflect text changes
   }
 }
 
